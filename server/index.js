@@ -17,6 +17,20 @@ app.get("/api", (req, res) => {
   });
 });
 
+const socketIO = require("socket.io")(http, {
+  cors: {
+    origin: "http://localhost:3000",
+  },
+});
+
+socketIO.on("connection", (socket) => {
+  console.log(`⚡: ${socket.id} user just connected!`);
+  socket.on("disconnect", () => {
+    socket.disconnect();
+    console.log(`🔥: ${socket.id} user just disconnected!`);
+  });
+});
+
 http.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
 });
