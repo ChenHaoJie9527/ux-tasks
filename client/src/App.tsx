@@ -1,14 +1,20 @@
-import { useState } from 'react'
-import './App.css'
+import { useState } from "react";
+import socketIO from "socket.io-client";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import "./App.css";
+import { Home, Main } from "@/components";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
 
   return (
-    <div className="App">
-      <p>hello world</p>
-    </div>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />}></Route>
+        <Route path="/app" element={<Main socket={socketIO} />}></Route>
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
