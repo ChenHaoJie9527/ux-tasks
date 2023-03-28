@@ -11,7 +11,7 @@ const {
 
 const socketIO = new Server(http, {
 	cors: {
-		origin: "http://localhost:3000",
+		origin: "http://127.0.0.1:5000",
 	}
 })
 
@@ -89,3 +89,7 @@ app.get("/api", (req, res) => {
 http.listen(PORT, () => {
 	console.log(`Server listening on ${PORT}`);
 });
+
+socketIO.listen(4001, () => {
+	console.log('Server listening on port 4000');
+})

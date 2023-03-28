@@ -34,7 +34,7 @@ const Main: FC<MainProps> = ({ socketIO }) => {
   };
 
   useEffect(() => {
-    socketRef.current = socketIO();
+    socketRef.current = socketIO("http://localhost:4001");
     const socket = socketRef.current;
     function fetchTodos() {
       fetch("http://localhost:4000/api")
