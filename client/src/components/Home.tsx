@@ -1,11 +1,18 @@
-import { FC, useState } from "react";
+import { FC, FormHTMLAttributes, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Home: FC = () => {
-    const [username, setUsername] = useState("");
+  const [username, setUsername] = useState("");
+  const navigate = useNavigate();
+  const handleSubmit = (el: any) => {
+    el.preventDefault();
+    localStorage.setItem("_username", username);
+    navigate(`/app`);
+  };
   return (
     <div className="home">
       <h2>Sign in to your todo-list</h2>
-      <form>
+      <form onSubmit={handleSubmit} className="home__form">
         <label htmlFor="username">Your Username</label>
         <input
           value={username}

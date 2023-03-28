@@ -1,15 +1,85 @@
-import { FC } from "react";
+import { FC, useEffect, useMemo, useRef, useState } from "react";
+import { Socket } from "socket.io-client";
+import { Nav } from "@/common";
 
-interface MainProps {
-  socket: any;
+interface ServerToClientEvents {
+  noArg: () => void;
+  basicEmit: (a: number, b: string, c: Buffer) => void;
+  withAck: (d: string, callback: (e: number) => void) => void;
+  todos: (list: any[]) => void;
 }
 
-const Main: FC<MainProps> = ({ socket }) => {
+interface ClientToServerEvents {
+  addTodo: (props: { id: string; todo: string; comments: any[] }) => void;
+}
+
+interface MainProps {
+  socketIO: any;
+}
+
+const Main: FC<MainProps> = ({ socketIO }) => {
+  const [todo, setTodo] = useState("");
+  const [todoList, setTodoList] = useState<any[]>([]);
+  const socketRef = useRef<Socket<ServerToClientEvents, ClientToServerEvents> | null>(null);
+  const handleAddTodo = (el: any) => {
+    console.log('todoList', todoList);
+    el.preventDefault();
+    const socket = socketRef.current;
+    socket?.emit("addTodo", {
+      id: generateID(),
+      todo,
+      comments: [1],
+    });
+    setTodo("");
+  };
+
+  useEffect(() => {
+    socketRef.current = socketIO();
+    const socket = socketRef.current;
+    function fetchTodos() {
+      fetch("http://localhost:4000/api")
+        .then((res) => res.json())
+        .then((data) => setTodoList(data))
+        .catch((err) => console.error(err));
+    }
+
+    fetchTodos();
+    socket?.on("todos", (data) => {
+      setTodoList(data)
+    });
+  }, [socketIO]);
+
   return (
     <div>
-      <h1>Main</h1>
+      <Nav />
+      <form className="form" onSubmit={handleAddTodo}>
+        <input
+          type="text"
+          value={todo}
+          className="input"
+          required
+          onChange={(e) => setTodo(e.target.value)}
+        />
+        <button className="form__cta">ADD TODO</button>
+      </form>
+      <div className="todo__container">
+        {todoList.map((item) => {
+          return (
+            <div className="todo__item" key={item.id}>
+              <p>{item.todo}</p>
+              <div>
+                <button className="commentsBtn">View Comments</button>
+                <button className="deleteBtn">DELETE</button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };
 
 export default Main;
+function generateID() {
+  return Math.random().toString(36).substring(2, 10);
+}
