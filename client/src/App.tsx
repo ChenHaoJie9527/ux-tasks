@@ -5,7 +5,6 @@ import "./App.css";
 import { Home, Main } from "@/components";
 
 function App() {
-  const [count, setCount] = useState(0);
 
   return (
     <BrowserRouter>
