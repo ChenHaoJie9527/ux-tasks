@@ -4,5 +4,11 @@ export enum socketFCName {
   ViewComments = "viewComments",
   UpdateComment = "updateComment",
   DeleteTodo = "deleteTodo",
-  Disconnect = "disconnect"
+  Disconnect = "disconnect",
+}
+
+export interface updateCommentCBProps {
+  user: any;
+  todoID: any;
+  comment: any;
 }

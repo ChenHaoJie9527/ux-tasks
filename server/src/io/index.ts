@@ -1,5 +1,4 @@
-// const { Server } = require("socket.io");
-import { socketFCName } from "@/contant";
+import { socketFCName, updateCommentCBProps } from "@/contant";
 import { Server, Socket } from "socket.io";
 import {
   addTodo,
@@ -12,7 +11,8 @@ interface IOProps {
   http: any;
   origin: string;
 }
-export default function createSocketIO(params: IOProps) {
+export function createSocketIO(params: IOProps) {
+  let todoList = [];
   return () => {
     const socketIO = new Server(params.http, {
       cors: {
@@ -21,15 +21,31 @@ export default function createSocketIO(params: IOProps) {
     });
     socketIO.on(socketFCName.Connection, (socket: Socket) => {
       console.log(`⚡: ${socket.id} user just connected!`);
-      socket.on(socketFCName.AddTodo, addTodo);
 
-      socket.on(socketFCName.ViewComments, viewComments);
+      socket.on(socketFCName.AddTodo, (todo) => {
+        todoList.push(todo);
+        addTodo(socket, todoList);
+      });
 
-      socket.on(socketFCName.UpdateComment, updateComment);
+      socket.on(socketFCName.ViewComments, (id) => {
+        viewComments(socket, todoList, id);
+      });
 
-      socket.on(socketFCName.DeleteTodo, deleteTodo);
+      socket.on(socketFCName.UpdateComment, (data: updateCommentCBProps) => {
+        todoList = updateComment(socket, todoList, data);
+      });
 
-      socket.on(socketFCName.Disconnect, disconnect);
+      socket.on(socketFCName.DeleteTodo, (id) => {
+        todoList = deleteTodo(socket, todoList, id);
+      });
+
+      socket.on(socketFCName.Disconnect, () => {
+        disconnect(socket);
+      });
     });
+    return {
+      todoList,
+      socketIO,
+    };
   };
 }
