@@ -1,7 +1,21 @@
 import { Socket } from "socket.io";
-
-export default function deleteTodo(socket: Socket, todoList: any[], id: any) {
+import {
+  ClientToServerEvents,
+  InterServerEvents,
+  ServerToClientEvents,
+  SocketData,
+} from "@/types";
+export default function deleteTodo(
+  socket: Socket<
+    ClientToServerEvents,
+    ServerToClientEvents,
+    InterServerEvents,
+    SocketData
+  >,
+  todoList: any[],
+  id: any
+) {
   const res = todoList.filter((todo) => todo.id !== id);
-  socket.emit("todos", todoList);
+  socket.emit("deleteTodo", todoList);
   return res;
 }

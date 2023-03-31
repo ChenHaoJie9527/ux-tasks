@@ -1,7 +1,13 @@
 import { updateCommentCBProps } from "@/contant";
 import { Socket } from "socket.io";
+import type {
+  ClientToServerEvents,
+  ServerToClientEvents,
+  InterServerEvents,
+  SocketData,
+} from "../../types";
 export default function updateComment(
-  socket: Socket,
+  socket: Socket<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>,
   todoList: any[],
   data: updateCommentCBProps
 ) {
@@ -15,5 +21,5 @@ export default function updateComment(
       socket.emit("commentsReceived", todoList[i]);
     }
   }
-  return todoList
+  return todoList;
 }

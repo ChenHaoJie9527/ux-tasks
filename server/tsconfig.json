@@ -2,7 +2,7 @@
     "compilerOptions": {
       "rootDir": "./",
       "outDir": "./dist",
-      "module": "ES6",
+      "module": "CommonJS",
       "target": "es6",
       "lib": ["es6"],
       "esModuleInterop": true,
@@ -10,7 +10,8 @@
       "baseUrl": ".",
       "paths": {
         "@/*": ["./src/*"]
-      }
+      },
+      "moduleResolution": "node"
     },
     "exclude": [
       "node_modules",
