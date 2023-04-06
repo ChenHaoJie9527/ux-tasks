@@ -21,7 +21,12 @@ const http = createServer(app);
 
 import { Server } from "socket.io";
 
-const socketIO = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(http, {
+const socketIO = new Server<
+  ClientToServerEvents,
+  ServerToClientEvents,
+  InterServerEvents,
+  SocketData
+>(http, {
   cors: {
     origin: "http://127.0.0.1:5000",
   },
@@ -43,8 +48,11 @@ socketIO.on("connection", (socket) => {
     updateComment(socket, todoList, data);
   });
 
-  socket.on(socketFCName.DeleteTodo, (id) => {
-    deleteTodo(socket, todoList, id);
+  socket.on(socketFCName.DeleteTodo, (data) => {
+    const { id } = data;
+    const list = deleteTodo(socket, todoList, id);
+    todoList = list;
+    socket.emit("todos", todoList);
   });
 
   socket.on("disconnect", () => {

@@ -11,6 +11,7 @@ interface ServerToClientEvents {
 
 interface ClientToServerEvents {
   addTodo: (props: { id: string; todo: string; comments: any[] }) => void;
+  deleteTodo: (data: { id: any }) => void;
 }
 
 interface MainProps {
@@ -20,7 +21,6 @@ interface MainProps {
 const Main: FC<MainProps> = ({ socketIO }) => {
   const [todo, setTodo] = useState("");
   const [todoList, setTodoList] = useState<any[]>([]);
-  const socketOriginURL = useRef("http://localhost:4001");
   const socketRef = useRef<Socket<
     ServerToClientEvents,
     ClientToServerEvents
@@ -37,13 +37,19 @@ const Main: FC<MainProps> = ({ socketIO }) => {
     setTodo("");
   };
 
+  const handleDeleteTodo = (id: any) => {
+    const socket = socketRef.current;
+    socket?.emit("deleteTodo", { id });
+  };
+
   useEffect(() => {
     if (socketRef.current === null) {
-      socketRef.current = socketIO(socketOriginURL.current);
+      socketRef.current = socketIO("http://localhost:4001");
     }
+
     const socket = socketRef.current;
     function fetchTodos() {
-      fetch(`${socketOriginURL.current}/api`)
+      fetch("http://localhost:4000/api")
         .then((res) => res.json())
         .then((data) => setTodoList(data))
         .catch((err) => console.error(err));
@@ -75,7 +81,12 @@ const Main: FC<MainProps> = ({ socketIO }) => {
               <p>{item.todo}</p>
               <div>
                 <button className="commentsBtn">View Comments</button>
-                <button className="deleteBtn">DELETE</button>
+                <button
+                  className="deleteBtn"
+                  onClick={() => handleDeleteTodo(item.id)}
+                >
+                  DELETE
+                </button>
               </div>
             </div>
           );
