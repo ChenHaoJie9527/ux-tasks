@@ -20,6 +20,7 @@ interface MainProps {
 const Main: FC<MainProps> = ({ socketIO }) => {
   const [todo, setTodo] = useState("");
   const [todoList, setTodoList] = useState<any[]>([]);
+  const socketOriginURL = useRef("http://localhost:4001");
   const socketRef = useRef<Socket<
     ServerToClientEvents,
     ClientToServerEvents
@@ -38,11 +39,11 @@ const Main: FC<MainProps> = ({ socketIO }) => {
 
   useEffect(() => {
     if (socketRef.current === null) {
-      socketRef.current = socketIO("http://localhost:4001");
+      socketRef.current = socketIO(socketOriginURL.current);
     }
     const socket = socketRef.current;
     function fetchTodos() {
-      fetch("http://localhost:4000/api")
+      fetch(`${socketOriginURL.current}/api`)
         .then((res) => res.json())
         .then((data) => setTodoList(data))
         .catch((err) => console.error(err));
