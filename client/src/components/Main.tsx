@@ -1,5 +1,5 @@
-import { FC, useEffect, useMemo, useRef, useState } from "react";
-import { Socket } from "socket.io-client";
+import { FC, useEffect, useRef, useState } from "react";
+import { Socket, io } from "socket.io-client";
 import { Nav } from "@/common";
 
 interface ServerToClientEvents {
@@ -14,15 +14,18 @@ interface ClientToServerEvents {
 }
 
 interface MainProps {
-  socketIO: any;
+  socketIO: typeof io;
 }
 
 const Main: FC<MainProps> = ({ socketIO }) => {
   const [todo, setTodo] = useState("");
   const [todoList, setTodoList] = useState<any[]>([]);
-  const socketRef = useRef<Socket<ServerToClientEvents, ClientToServerEvents> | null>(null);
+  const socketRef = useRef<Socket<
+    ServerToClientEvents,
+    ClientToServerEvents
+  > | null>(null);
   const handleAddTodo = (el: any) => {
-    console.log('todoList', todoList);
+    console.log("todoList", todoList);
     el.preventDefault();
     const socket = socketRef.current;
     socket?.emit("addTodo", {
@@ -34,7 +37,9 @@ const Main: FC<MainProps> = ({ socketIO }) => {
   };
 
   useEffect(() => {
-    socketRef.current = socketIO("http://localhost:4001");
+    if (socketRef.current === null) {
+      socketRef.current = socketIO("http://localhost:4001");
+    }
     const socket = socketRef.current;
     function fetchTodos() {
       fetch("http://localhost:4000/api")
@@ -45,7 +50,7 @@ const Main: FC<MainProps> = ({ socketIO }) => {
 
     fetchTodos();
     socket?.on("todos", (data) => {
-      setTodoList(data)
+      setTodoList(data);
     });
   }, [socketIO]);
 
