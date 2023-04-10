@@ -1,6 +1,7 @@
 import { FC, useEffect, useRef, useState } from "react";
 import { Socket, io } from "socket.io-client";
 import { Nav } from "@/common";
+import Modal from "@/common/Modal";
 
 interface ServerToClientEvents {
   noArg: () => void;
@@ -25,6 +26,8 @@ const Main: FC<MainProps> = ({ socketIO }) => {
     ServerToClientEvents,
     ClientToServerEvents
   > | null>(null);
+  const [showModal, setShowModal] = useState(false);
+
   const handleAddTodo = (el: any) => {
     console.log("todoList", todoList);
     el.preventDefault();
@@ -61,6 +64,10 @@ const Main: FC<MainProps> = ({ socketIO }) => {
     });
   }, [socketIO]);
 
+  const toggleModal = () => {
+    setShowModal(!showModal);
+  };
+
   return (
     <div>
       <Nav />
@@ -80,7 +87,7 @@ const Main: FC<MainProps> = ({ socketIO }) => {
             <div className="todo__item" key={item.id}>
               <p>{item.todo}</p>
               <div>
-                <button className="commentsBtn">View Comments</button>
+                <button className="commentsBtn" onClick={toggleModal}>View Comments</button>
                 <button
                   className="deleteBtn"
                   onClick={() => handleDeleteTodo(item.id)}
@@ -92,6 +99,15 @@ const Main: FC<MainProps> = ({ socketIO }) => {
           );
         })}
       </div>
+      {showModal ? (
+        <Modal
+          showModal={showModal}
+          socket={socketRef}
+          setShowModal={setShowModal}
+        />
+      ) : (
+        ""
+      )}
     </div>
   );
 };
