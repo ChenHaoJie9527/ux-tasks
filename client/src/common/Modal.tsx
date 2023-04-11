@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useRef, useState } from "react";
 
 interface ModelProps {
   socket: any;
@@ -8,10 +8,17 @@ interface ModelProps {
 
 const Modal: FC<ModelProps> = ({ socket, showModal, setShowModal }) => {
   const [comment, setComment] = useState("");
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const onInputChange = (el: React.ChangeEvent<HTMLInputElement>) => {
     const value = el.target.value;
     setComment(value);
+  };
+  // If the container (modalRef) is clicked, it closes the modal.
+  const closeModal = (el: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (modalRef.current === el.target) {
+      setShowModal(!showModal);
+    }
   };
 
   const addComment = (el: React.FormEvent<HTMLFormElement>) => {
@@ -23,7 +30,7 @@ const Modal: FC<ModelProps> = ({ socket, showModal, setShowModal }) => {
   };
 
   return (
-    <div className="modal">
+    <div className="modal" ref={modalRef} onClick={closeModal}>
       <div className="modal__container">
         <h3>Comments</h3>
         <form className="comment__form" onSubmit={addComment}>
