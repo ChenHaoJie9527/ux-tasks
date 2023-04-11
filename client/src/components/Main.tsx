@@ -8,11 +8,13 @@ interface ServerToClientEvents {
   basicEmit: (a: number, b: string, c: Buffer) => void;
   withAck: (d: string, callback: (e: number) => void) => void;
   todos: (list: any[]) => void;
+  commentsReceived: (todo: any) => void;
 }
 
 interface ClientToServerEvents {
   addTodo: (props: { id: string; todo: string; comments: any[] }) => void;
   deleteTodo: (data: { id: any }) => void;
+  viewComments: (id: any) => void;
 }
 
 interface MainProps {
@@ -62,10 +64,15 @@ const Main: FC<MainProps> = ({ socketIO }) => {
     socket?.on("todos", (data) => {
       setTodoList(data);
     });
+    socket?.on("commentsReceived", (todo) => {
+      console.log(todo);
+    });
   }, [socketIO]);
 
-  const toggleModal = () => {
+  const toggleModal = (todoId: any) => {
     setShowModal(!showModal);
+    const socket = socketRef.current;
+    socket?.emit("viewComments", todoId);
   };
 
   return (
@@ -87,7 +94,12 @@ const Main: FC<MainProps> = ({ socketIO }) => {
             <div className="todo__item" key={item.id}>
               <p>{item.todo}</p>
               <div>
-                <button className="commentsBtn" onClick={toggleModal}>View Comments</button>
+                <button
+                  className="commentsBtn"
+                  onClick={() => toggleModal(item.id)}
+                >
+                  View Comments
+                </button>
                 <button
                   className="deleteBtn"
                   onClick={() => handleDeleteTodo(item.id)}

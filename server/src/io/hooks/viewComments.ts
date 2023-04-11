@@ -18,7 +18,7 @@ export default function viewComments(
   for (let i = 0; i < todoList.length; i++) {
     const item = todoList[i];
     if (id === item.id) {
-      socket.emit("viewComments", todoList[i]);
+      socket.emit("commentsReceived", todoList[i]);
     }
   }
 }

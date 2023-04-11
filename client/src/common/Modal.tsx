@@ -1,7 +1,8 @@
-import { FC, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
+import { Socket } from "socket.io-client";
 
 interface ModelProps {
-  socket: any;
+  socket: Socket;
   showModal: boolean;
   setShowModal: any;
 }
@@ -9,6 +10,7 @@ interface ModelProps {
 const Modal: FC<ModelProps> = ({ socket, showModal, setShowModal }) => {
   const [comment, setComment] = useState("");
   const modalRef = useRef<HTMLDivElement>(null);
+  const [commentList, setCommentList] = useState([]);
 
   const onInputChange = (el: React.ChangeEvent<HTMLInputElement>) => {
     const value = el.target.value;
@@ -28,6 +30,12 @@ const Modal: FC<ModelProps> = ({ socket, showModal, setShowModal }) => {
     });
     setComment("");
   };
+
+  useEffect(() => {
+    socket.on("commentsReceived", (todo) => {
+      console.log(todo);
+    });
+  }, [socket]);
 
   return (
     <div className="modal" ref={modalRef} onClick={closeModal}>
