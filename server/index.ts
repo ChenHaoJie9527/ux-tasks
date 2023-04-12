@@ -15,7 +15,7 @@ import {
   SocketData,
 } from "@/types";
 const app = express();
-const PORT = 4000;
+const PORT = 9999;
 
 const http = createServer(app);
 
@@ -77,4 +77,4 @@ http.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
 });
 
-socketIO.listen(4001);
+socketIO.listen(4004);

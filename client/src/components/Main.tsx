@@ -29,15 +29,15 @@ const Main: FC<MainProps> = ({ socketIO }) => {
     ClientToServerEvents
   > | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [selectItemID, setSelectItemID] = useState("");
 
   const handleAddTodo = (el: any) => {
-    console.log("todoList", todoList);
     el.preventDefault();
     const socket = socketRef.current;
     socket?.emit("addTodo", {
       id: generateID(),
       todo,
-      comments: [1],
+      comments: [],
     });
     setTodo("");
   };
@@ -70,9 +70,10 @@ const Main: FC<MainProps> = ({ socketIO }) => {
   }, [socketIO]);
 
   const toggleModal = (todoId: any) => {
-    setShowModal(!showModal);
     const socket = socketRef.current;
+    setSelectItemID(todoId);
     socket?.emit("viewComments", todoId);
+    setShowModal(!showModal);
   };
 
   return (
@@ -114,8 +115,9 @@ const Main: FC<MainProps> = ({ socketIO }) => {
       {showModal ? (
         <Modal
           showModal={showModal}
-          socket={socketRef}
+          socket={socketRef.current}
           setShowModal={setShowModal}
+          selectedItemID={selectItemID}
         />
       ) : (
         ""
